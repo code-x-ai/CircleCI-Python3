@@ -1,0 +1,43 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run main.py
+          command: python main.py
+
+  test:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: |
+            pip install pytest
+            pytest test.py -v
+
+  deploy:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: Deploy message
+          command: echo "Deployment successful!"
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
